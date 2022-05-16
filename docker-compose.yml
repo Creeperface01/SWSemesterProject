@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:10.5
+    container_name: project_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Europe/Prague
+    env_file:
+      - ./.env
+    volumes:
+      - project-db-data:/var/lib/mysql
+    networks:
+      - project-network
+
+  web:
+    build: .
+    command: python main.py
+    volumes:
+      - .:/code:cached
+    ports:
+      - ${WEB_PORT}:5000
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_DATABASE}
+      - DB_USER=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - FLASK_ENV=development
+    networks:
+      - project-network
+    depends_on:
+      - db
+
+  adminer:
+    restart: always
+    image: adminer
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "10"
+
+    container_name: project_adminer
+    ports:
+      - "127.0.0.1:${ADMINER_PORT}:8080"
+    networks:
+      - project-network
+    links:
+      - db
+
+volumes:
+  project-db-data:
+
+networks:
+  project-network:
+    driver: bridge
