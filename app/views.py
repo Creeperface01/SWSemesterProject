@@ -18,14 +18,17 @@ def search() -> str:
     return render_template('index.html')
 
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup() -> str | Response:
     form = SignUpForm()
 
+    print(0)
     if form.validate_on_submit():
+        print(1)
         existing_user = User.query.filter_by(email=form.email.data).first()
 
         if existing_user is None:
+            print(2)
             user = User(
                 email=form.email.data,
             )
@@ -37,11 +40,14 @@ def signup() -> str | Response:
 
             login_user(user)
 
+            print(3)
             return redirect(url_for('home'))
 
+        print(10)
         flash('This email has been already registered by a different user', 'danger')
 
-    return render_template('signup.html')
+    print(11)
+    return render_template('signup.html', form=form)
 
 
 @app.route('/login', methods=['POST'])
