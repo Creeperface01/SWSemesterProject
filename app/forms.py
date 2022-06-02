@@ -107,7 +107,8 @@ class ProductForm(FlaskForm):
             DataRequired(),
             FileRequired(),
             FileAllowed(images, 'Only image formats are allowed')
-        ]
+        ],
+        render_kw={'multiple': True}
     )
 
     keywords = StringField(
@@ -116,3 +117,5 @@ class ProductForm(FlaskForm):
             DataRequired(),
         ]
     )
+
+    submit = SubmitField('Add new product')

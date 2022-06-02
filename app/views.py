@@ -10,12 +10,12 @@ current_user: User
 
 @app.route('/')
 def home() -> str:
-    return render_template('index.html')
+    return render_template('homepage.html')
 
 
 @app.route('/search')
 def search() -> str:
-    return render_template('index.html')
+    return render_template('searchresult.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -41,7 +41,7 @@ def signup() -> str | Response:
             login_user(user)
 
             print(3)
-            return redirect(url_for('home'))
+            return redirect(url_for(''))
 
         print(10)
         flash('This email has been already registered by a different user', 'danger')
@@ -64,7 +64,7 @@ def login() -> str | Response:
             login_user(user)
             flash('You have been successfully logged in', 'success')
 
-    return render_template('signup.html')
+    return render_template('homepage.html')
 
 
 @app.route('/logout', methods=['GET'])
@@ -95,10 +95,12 @@ def follow_user(user_id: int) -> Response:
     db.session.commit()
 
 
-@app.route('/product/new')
+@app.route('/product/new', methods=['GET', 'POST'])
 @login_required
 def add_product():
-    return render_template('product.html')
+    form = ProductForm()
+
+    return render_template('product.html', form=form)
 
 
 @app.route('/product/edit/<product_id>')
