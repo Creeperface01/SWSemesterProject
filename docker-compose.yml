@@ -30,6 +30,7 @@ services:
       - DB_USER=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - FLASK_ENV=development
+      - SECRET_KEY=${SECRET_KEY}
     networks:
       - project-network
     depends_on:

@@ -39,7 +39,7 @@ def signup() -> str | Response:
 
             return redirect(url_for('home'))
 
-        flash('This email has been already registered by a different user')
+        flash('This email has been already registered by a different user', 'danger')
 
     return render_template('signup.html')
 
@@ -56,6 +56,7 @@ def login() -> str | Response:
 
         if user and user.check_password(password=form.password.data):
             login_user(user)
+            flash('You have been successfully logged in', 'success')
 
     return render_template('signup.html')
 
