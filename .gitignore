@@ -240,4 +240,4 @@ dmypy.json
 cython_debug/
 
 .idea/
-
+app/*.sqlite3
