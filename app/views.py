@@ -1,14 +1,9 @@
 from flask import render_template, flash, redirect, url_for, Response
-from flask_login import login_required, current_user, login_user
+from flask_login import login_required, current_user, login_user, logout_user
 
 from app import app
 from app.forms import *
 from app.models import *
-
-search_form = SearchForm()
-
-login_form = LoginForm()
-signup_form = SignUpForm()
 
 current_user: User
 
@@ -24,13 +19,8 @@ def search() -> str:
 
 
 @app.route('/signup')
-def signup() -> str:
-    return render_template('signup.html')
-
-
-@app.route('/login', methods=['POST'])
-def login() -> str | Response:
-    form = LoginForm()
+def signup() -> str | Response:
+    form = SignUpForm()
 
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -54,8 +44,26 @@ def login() -> str | Response:
     return render_template('signup.html')
 
 
+@app.route('/login', methods=['POST'])
+def login() -> str | Response:
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+
+        if user and user.check_password(password=form.password.data):
+            login_user(user)
+
+    return render_template('signup.html')
+
+
 @app.route('/logout', methods=['GET'])
+@login_required
 def logout() -> Response:
+    logout_user()
     return redirect('home')
 
 
