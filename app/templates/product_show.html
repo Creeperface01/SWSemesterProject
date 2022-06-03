@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h3 class="mt-4 mb-4">
+        {{ product.name }}
+        <small class="float-end h6">20. 6. 2022{{ product.created_at|datetime }}</small>
+    </h3>
+    <div class="row">
+        {% for image in product.images %}
+            <div class="col-sm-12 col-md-6 col-lg-4 text-center">
+                <img height="150" src="{{ url_for('static', filename='images/' + image.path) }}">
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row mt-2 p-2 border-top border-dark">
+        <div class="col-12">
+            {{ product.user.first_name }} {{ product.user.last_name }}
+            {% if current_user.is_authenticated and current_user != product.user %}
+                {% if product.user in current_user.followees %}
+                    <button class="btn btn-outline-danger d-inline-block ms-3">
+                    Unfollow
+                {% else %}
+                    <button class="btn btn-outline-success d-inline-block ms-3">
+                    Follow
+                {% endif %}
+            </button>
+            {% endif %}
+
+            <span class="float-end">
+                {% if product.sold %}
+                    <button class="btn btn-danger d-inline-block ms-3 disabled">Sold</button>
+                {% endif %}
+                {% if current_user == product.user %}
+                    {% if not product.sold %}
+                        <a href="" class="btn btn-primary d-inline-block ms-3">Sell</a>
+                    {% endif %}
+                    <a href="" class="btn btn-warning d-inline-block ms-3">Edit</a>
+                    <a onclick="confirm('Are you sure you want to remove this product?')"
+                       class="btn btn-danger d-inline-block ms-3">Remove</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="row mt-2 p-4">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aliquam aperiam blanditiis consectetur
+        consequatur corporis debitis distinctio excepturi ipsum laboriosam numquam officiis placeat quaerat, quisquam
+        recusandae reiciendis voluptas? Accusantium, odit!
+    </div>
+{% endblock %}

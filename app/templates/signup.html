@@ -4,22 +4,14 @@
     Sign up
 {% endblock %}
 
-{% macro form_errors(input) %}
-    {% if input.errors %}
-        <ul class="errors">
-            {% for error in input.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endmacro %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
     <section class="content">
         <div class="container-fluid">
             <!-- Default box -->
             <div class="row justify-content-center">
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="col-lg-8 col-md-12">
                     <div class="card" style="border: none">
                         <div class="card-body">
                             <form method="post">
@@ -29,27 +21,27 @@
                                 <div class="mb-3">
                                     <label for="studentID" class="form-label">First name:</label>
                                     {{ form.first_name(class='form-control', placeholder='First name') }}
-                                    {{ form_errors(form.first_name) }}
+                                    {{ macros.form_errors(form.first_name) }}
                                 </div>
                                 <div class="mb-3">
                                     <label for="studentID" class="form-label">Last name:</label>
                                     {{ form.last_name(class='form-control', placeholder='Last name') }}
-                                    {{ form_errors(form.last_name) }}
+                                    {{ macros.form_errors(form.last_name) }}
                                 </div>
                                 <div class="mb-3">
                                     <label for="email" class="form-label">E-mail:</label>
                                     {{ form.email(class='form-control', placeholder='E-mail') }}
-                                    {{ form_errors(form.email) }}
+                                    {{ macros.form_errors(form.email) }}
                                 </div>
                                 <div class="mb-3">
                                     <label for="inputPassword" class="form-label">Password:</label>
                                     {{ form.password(class='form-control', placeholder='Password') }}
-                                    {{ form_errors(form.password) }}
+                                    {{ macros.form_errors(form.password) }}
                                 </div>
                                 <div class="mb-3">
                                     <label for="repeatPassword" class="form-label">Repeat password:</label>
                                     {{ form.password2(class='form-control', placeholder='Repeat password') }}
-                                    {{ form_errors(form.password2) }}
+                                    {{ macros.form_errors(form.password2) }}
                                 </div>
                                 {{ form.submit(class='btn btn-dark text-center') }}
                             </form>

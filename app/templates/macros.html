@@ -1,0 +1,35 @@
+{% macro form_errors(input) %}
+    {% if input.errors %}
+        <ul class="errors">
+            {% for error in input.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_field(field, class='', label_after=False) %}
+    {% set class = class + ' form-control' %}
+
+    {% if field.errors %}
+        {% set class = class + ' is-invalid' %}
+    {% endif %}
+
+    {% if not label_after %}
+        <label class="form-label" for="{{ field.id }}">{{ field.label.text }}:</label>
+    {% endif %}
+
+    {{ field(class=class, **kwargs) }}
+
+    {% if label_after %}
+        <label class="form-label" for="{{ field.id }}">{{ field.label.text }}:</label>
+    {% endif %}
+
+    {% if field.errors %}
+        <div class="invalid-feedback">
+            {% for err in field.errors %}
+                {{ err }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}

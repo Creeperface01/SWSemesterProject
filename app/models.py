@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import datetime
+
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -7,16 +9,16 @@ from app import db
 
 product_keywords = db.Table(
     "product_keywords",
-    db.Column("product_id", db.ForeignKey("product.id"), nullable=False),
-    db.Column("keyword_id", db.ForeignKey("keyword.id"), nullable=False),
+    db.Column("product_id", db.Integer, db.ForeignKey("product.id"), nullable=False),
+    db.Column("keyword_id", db.Integer, db.ForeignKey("keyword.id"), nullable=False),
 
     db.UniqueConstraint('product_id', 'keyword_id', name='product_keyword_unique'),
 )
 
 user_follows = db.Table(
     "user_follows",
-    db.Column("user_id", db.ForeignKey("user.id"), nullable=False),
-    db.Column("followee_id", db.ForeignKey("user.id"), nullable=False),
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), nullable=False),
+    db.Column("followee_id", db.Integer, db.ForeignKey("user.id"), nullable=False),
 
     db.UniqueConstraint('user_id', 'followee_id', name='user_followee_unique'),
 )
@@ -59,12 +61,12 @@ class Keyword(db.Model):
 
     name = db.Column(db.String(256), nullable=False)
 
-    products = db.relationship(
-        'Product',
-        secondary=product_keywords,
-        lazy='dynamic',
-        backref=db.backref('keyword', lazy='dynamic')
-    )
+    # products = db.relationship(
+    #     'Product',
+    #     secondary=product_keywords,
+    #     lazy='dynamic',
+    #     backref=db.backref('keyword', lazy='dynamic')
+    # )
 
 
 class ProductImage(db.Model):
@@ -94,5 +96,16 @@ class Product(db.Model):
         'Keyword',
         secondary=product_keywords,
         lazy='dynamic',
-        backref=db.backref('product', lazy='dynamic')
+        backref=db.backref('products', lazy='dynamic')
+    )
+
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=datetime.datetime.utcnow,
+    )
+
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
     )

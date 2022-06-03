@@ -4,31 +4,30 @@
     New product
 {% endblock %}
 
+{% import 'macros.html' as macros %}
+
 {% block content %}
-       <section class="content">
+    <section class="content">
         <div class="container-fluid">
             <!-- Default box -->
             <div class="row justify-content-center">
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="col-md-12 col-lg-8">
                     <div class="card" style="border: none">
                         <div class="card-body">
-                            <form method="post">
+                            <form method="post" enctype="multipart/form-data">
+                                {{ form.csrf_token }}
                                 <h3 class="text-center">Add new product</h3>
                                 <div class="mb-3">
-                                    <label  class="form-label">Name:</label>
-                                    {{ form.name(class='form-control', placeholder='Name') }}
+                                    {{ macros.render_field(form.name, placeholder='Name') }}
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Keywords:</label>
-                                    {{ form.keywords(class='form-control tags', placeholder='Keywords') }}
+                                    {{ macros.render_field(form.keywords, 'tags', placeholder='Separate by pressing enter') }}
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Description:</label>
-                                    {{ form.description(class='form-control', placeholder='Description') }}
+                                    {{ macros.render_field(form.description, placeholder='Description') }}
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Images:</label>
-                                    {{ form.images(class='form-control')}}
+                                    {{ macros.render_field(form.images) }}
                                 </div>
                                 {{ form.submit(class='btn btn-dark text-center') }}
                             </form>

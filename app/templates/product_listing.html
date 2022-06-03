@@ -1,0 +1,29 @@
+<div class="row justify-content-start product-listing">
+    {% macro product_card(data) %}
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
+            <div class="card product-card p-0 m-2">
+                <img height="200px" src="{{ url_for('static', filename='images/' + data.images.first().path) }}"
+                     class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ data.name }}
+                        {% if data.sold %}
+                            <span class="badge bg-danger text-capitalize">Sold</span>
+                        {% endif %}
+                    </h5>
+                    <a href="{{ url_for('product_show', product_id=data.id) }}" class="btn btn-success">Go to detail</a>
+                </div>
+            </div>
+        </div>
+    {% endmacro %}
+
+    {% if not data|length %}
+        <h3 class="m-auto text-center">There are no products available</h3>
+    {% else %}
+
+        {% for entry in data %}
+            {{ product_card(entry) }}
+        {% endfor %}
+
+    {% endif %}
+</div>
