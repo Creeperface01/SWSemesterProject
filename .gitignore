@@ -241,3 +241,4 @@ cython_debug/
 
 .idea/
 app/*.sqlite3
+app/static/images/
