@@ -1,8 +1,10 @@
 import json
 import os
+import uuid
 
 from flask import render_template, flash, redirect, url_for, Response
 from flask_login import login_required, current_user, login_user, logout_user
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from app import app
@@ -119,23 +121,49 @@ def follow_user(user_id: int) -> Response:
     db.session.commit()
 
 
-@app.route('/product/new', methods=['GET', 'POST'])
-@login_required
-def add_product():
+def process_product_form(product: Product | None = None) -> bool:
     form = ProductForm()
 
     if form.validate_on_submit():
-        product = Product(
-            name=form.name.data,
-            description=form.description.data,
-            user=current_user
-        )
+        update = product is not None
+        if product is None:
+            product = Product(
+                user=current_user
+            )
 
-        for file in form.images.data:
-            filename = secure_filename(file.filename)
+            db.session.add(product)
+
+        product.name = form.name.data
+        product.description = form.description.data
+
+        form_images = {}
+        for form_image in form.images:
+            form_images[form_image.id] = form_image.data
+
+        product_images_to_remove = []
+
+        for i, image in enumerate(product.images):
+            form_id = 'images-' + str(i)
+
+            if form_id not in form_images:
+                product_images_to_remove.append(image)
+                continue
+
+            if form_id in form_images:
+                del form_images[form_id]
+
+        for remove_image in product_images_to_remove:
+            product.images.remove(remove_image)
+
+        for form_image in form_images.values():
+            if not isinstance(form_image, FileStorage):
+                continue
+
+            file = form_image
+            filename = str(uuid.uuid4()) + secure_filename(file.filename)
 
             file.save(
-                os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                os.path.join(app.config['UPLOAD_FOLDER'], 'images', filename)
             )
 
             product_image = ProductImage()
@@ -145,6 +173,7 @@ def add_product():
 
         keywords = json.loads(form.keywords.data)
 
+        product.keywords = []
         for kw in keywords:
             keyword = Keyword.query.filter(Keyword.name == kw['value']).first()
 
@@ -154,12 +183,24 @@ def add_product():
 
             product.keywords.append(keyword)
 
-        db.session.add(product)
         db.session.commit()
 
-        flash('Product has been published', 'success')
+        if update:
+            flash('Product has been updated', 'warning')
+        else:
+            flash('Product has been published', 'success')
 
-    return render_template('product.html', form=form)
+        return True
+
+    return False
+
+
+@app.route('/product/new', methods=['GET', 'POST'])
+@login_required
+def add_product():
+    process_product_form()
+
+    return render_template('product.html', form=ProductForm())
 
 
 @app.route('/product/<product_id>')
@@ -172,7 +213,7 @@ def product_show(product_id: int) -> str | Response:
     return render_template('product_show.html', product=product)
 
 
-@app.route('/product/edit/<product_id>')
+@app.route('/product/edit/<product_id>', methods=['GET', 'POST'])
 @login_required
 def edit_product(product_id: int) -> str | Response:
     product: Product = Product.query.get(product_id)
@@ -183,7 +224,19 @@ def edit_product(product_id: int) -> str | Response:
     if product.user != current_user:
         return Response('Access denied', status=403)
 
-    return render_template('product.html')
+    if process_product_form(product):
+        return redirect(url_for('edit_product', product_id=product.id))
+
+    default_data = {
+        'name': product.name,
+        'description': product.description,
+        'keywords': json.dumps(list(map(lambda x: {'value': x.name}, product.keywords))),
+        'images': list(map(lambda x: FileStorage(filename=x.path), product.images))
+    }
+
+    form = ProductForm(data=default_data)
+
+    return render_template('product.html', form=form, product=product)
 
 
 @app.route('/product/sell/<product_id>')
@@ -217,4 +270,4 @@ def delete_product(product_id: int) -> Response:
     db.session.delete(product)
     db.session.commit()
 
-    return redirect(url_for('product_show', product_id=product_id))
+    return redirect(url_for('home'))

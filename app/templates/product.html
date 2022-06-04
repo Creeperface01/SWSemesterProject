@@ -1,7 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    New product
+    {% if product is defined %}
+        Editing product
+    {% else %}
+        New product
+    {% endif %}
 {% endblock %}
 
 {% import 'macros.html' as macros %}
@@ -27,9 +31,17 @@
                                     {{ macros.render_field(form.description, placeholder='Description') }}
                                 </div>
                                 <div class="mb-3">
-                                    {{ macros.render_field(form.images) }}
+                                    <label class="form-label">Images:</label>
+                                    {{ macros.render_image_collection(form.images, label_after=None) }}
                                 </div>
-                                {{ form.submit(class='btn btn-dark text-center') }}
+
+                                <button type="submit" class="btn btn-dark mt-4 text-center">
+                                    {% if product is defined %}
+                                        Save
+                                    {% else %}
+                                        Add new product
+                                    {% endif %}
+                                </button>
                             </form>
                         </div>
                         <!-- /.card-body -->
@@ -43,9 +55,11 @@
 {% block scripts %}
     {{ super() }}
     <script>
-    $(document).ready(() => {
-        let input = document.querySelector('.tags');
-        new Tagify(input);
-    })
+        $(document).ready(() => {
+            let input = document.querySelector('.tags');
+            new Tagify(input);
+        })
     </script>
+
+    {{ macros.form_collection_script() }}
 {% endblock %}

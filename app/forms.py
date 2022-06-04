@@ -1,7 +1,7 @@
 from flask_uploads import UploadSet, IMAGES
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, MultipleFileField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, FieldList
 from wtforms.validators import (
     DataRequired,
     Email,
@@ -101,17 +101,20 @@ class ProductForm(FlaskForm):
         ]
     )
 
-    images = MultipleFileField(
-        'Images',
-        validators=[
-            DataRequired(),
-            FileAllowed(images, 'Only image formats are allowed')
-        ],
-        render_kw={'multiple': True}
+    images = FieldList(
+        FileField(
+            'Image',
+            validators=[
+                # DataRequired(),
+                FileAllowed(images, 'Only image formats are allowed')
+            ],
+            # render_kw={'multiple': True}
+        ),
+        min_entries=1
     )
 
     keywords = StringField(
-        'Kexwords',
+        'Keywords',
         validators=[
             DataRequired(),
         ]

@@ -90,7 +90,7 @@ class Product(db.Model):
     description = db.Column(db.Text())
     sold = db.Column(db.Boolean(), nullable=False, default=False)
 
-    images = db.relationship('ProductImage', backref='product', lazy='dynamic')
+    images = db.relationship('ProductImage', backref='product', lazy='dynamic', cascade='all, delete-orphan')
 
     keywords = db.relationship(
         'Keyword',

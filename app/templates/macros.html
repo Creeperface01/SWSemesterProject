@@ -15,13 +15,13 @@
         {% set class = class + ' is-invalid' %}
     {% endif %}
 
-    {% if not label_after %}
+    {% if label_after is not none and not label_after %}
         <label class="form-label" for="{{ field.id }}">{{ field.label.text }}:</label>
     {% endif %}
 
     {{ field(class=class, **kwargs) }}
 
-    {% if label_after %}
+    {% if label_after is not none and label_after %}
         <label class="form-label" for="{{ field.id }}">{{ field.label.text }}:</label>
     {% endif %}
 
@@ -32,4 +32,97 @@
             {% endfor %}
         </div>
     {% endif %}
+{% endmacro %}
+
+{% macro render_collection(collection, render_func=render_field, template_func=render_func, class='', label_after=False) %}
+    {% if collection|length %}
+        <div class="form-collection border rounded-3 p-3" data-index="{{ collection|length }}">
+            <div class="form-collection-items">
+                <div
+                        class="form-collection-input-template d-none"
+                >
+                    {{ template_func(collection[0], class, label_after, **kwargs) }}
+                </div>
+                {% for input in collection %}
+                    <div class="form-collection-input">
+                        {{ render_func(input, class, label_after, **kwargs) }}
+                    </div>
+
+                    <button type="button" class="btn btn-danger d-block mt-2 mb-2 form-collection-remove">Remove
+                    </button>
+                {% endfor %}
+            </div>
+            <hr>
+            <button type="button" class="btn btn-success d-block mt-2 mb-2 form-collection-add">Add</button>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_image(field, class='', label_after=False) %}
+    {% if field.data is not none %}
+        <input type="hidden" id="{{ field.id }}" name="{{ field.name }}">
+        <img class="mt-2" width="150px" src="{{ url_for('static', filename='images/' + field.data.filename) }}">
+    {% else %}
+        {{ render_field(field, class, label_after, **kwargs) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_image_collection(collection, class='', label_after=False) %}
+    {{ render_collection(collection, render_image, render_field, class, label_after, **kwargs) }}
+{% endmacro %}
+
+{% macro form_collection_script() %}
+    <script>
+        $(document).ready(() => {
+            $('.form-collection-input-template').each(function () {
+                let $this = $(this);
+                let html = $this.html();
+
+                $this.attr('template', html.trim());
+                $this.html('');
+            });
+
+            $('button.form-collection-add').on('click', function () {
+                let $this = $(this).siblings('.form-collection-items');
+
+                let collection = $this.closest('.form-collection');
+                let nextIndex = parseInt(collection.attr('data-index'));
+                collection.attr('data-index', nextIndex + 1);
+
+                let template = $($this.find('.form-collection-input-template').attr('template'));
+
+                let inputContainer = $('<div class="form-collection-input"></div>');
+                inputContainer.append(template);
+
+                $this.append(inputContainer);
+                $this.append('<button type="button" class="btn btn-danger d-block mt-2 mb-2 form-collection-remove">Remove</button>');
+
+                inputContainer.find('input').each(function () {
+                    let templateInput = $(this);
+
+                    let replaceIndex = function (el, attr, index) {
+                        let attrValue = el.attr(attr);
+
+                        el.attr(attr, attrValue.substring(0, attrValue.lastIndexOf('-')) + '-' + index);
+                    }
+
+                    let label = template.find('label[for="' + templateInput.attr('id') + '"]');
+
+                    if (label.length) {
+                        replaceIndex(label, 'for', nextIndex);
+                    }
+
+                    replaceIndex(templateInput, 'id', nextIndex);
+                    replaceIndex(templateInput, 'name', nextIndex);
+                });
+            });
+
+            $(document).on('click', 'button.form-collection-remove', function () {
+                let $this = $(this);
+
+                $this.prev('.form-collection-input').remove();
+                $this.remove();
+            });
+        });
+    </script>
 {% endmacro %}
