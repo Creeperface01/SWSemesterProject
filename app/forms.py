@@ -74,7 +74,7 @@ class SearchForm(FlaskForm):
     query = StringField(
         'Query',
         validators=[
-            DataRequired(),
+            DataRequired()
         ]
     )
 

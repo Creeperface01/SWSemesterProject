@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Index
+    Followed user products
 {% endblock %}
 
 {% block content %}
-   
+    {{ render_products_listing(products)|safe }}
 {% endblock %}

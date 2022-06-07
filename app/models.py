@@ -61,13 +61,6 @@ class Keyword(db.Model):
 
     name = db.Column(db.String(256), nullable=False)
 
-    # products = db.relationship(
-    #     'Product',
-    #     secondary=product_keywords,
-    #     lazy='dynamic',
-    #     backref=db.backref('keyword', lazy='dynamic')
-    # )
-
 
 class ProductImage(db.Model):
     __tablename__ = 'product_image'

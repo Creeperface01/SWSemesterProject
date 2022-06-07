@@ -14,7 +14,12 @@
     </div>
     <div class="row mt-2 p-2 border-top border-dark">
         <div class="col-12">
-            {{ product.user.first_name }} {{ product.user.last_name }}
+            <span class="me-3">
+                {{ product.user.first_name }} {{ product.user.last_name }}
+            </span>
+            {% for kw in product.keywords %}
+                <span class="badge bg-secondary">{{ kw.name }}</span>
+            {% endfor %}
             {% if current_user.is_authenticated and current_user != product.user %}
                 {% if product.user in current_user.followees %}
                     <button class="btn btn-outline-danger d-inline-block ms-3">

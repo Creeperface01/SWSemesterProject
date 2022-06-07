@@ -5,5 +5,15 @@
 {% endblock %}
 
 {% block content %}
+    {% if search_form.keywords is defined and search_form.keywords|length %}
+        <div class="mb-3">
+            <h4>
+                <span class="me-3">Results for keywords:</span>
+                {% for kw in search_form.keywords %}
+                    <span class="badge bg-secondary">{{ kw.name }}</span>
+                {% endfor %}
+            </h4>
+        </div>
+    {% endif %}
     {{ render_products_listing(products)|safe }}
 {% endblock %}

@@ -2,7 +2,7 @@ import json
 import os
 import uuid
 
-from flask import render_template, flash, redirect, url_for, Response
+from flask import render_template, flash, redirect, url_for, Response, request
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
@@ -36,7 +36,24 @@ def inject_global_variables():
 
 @app.route('/')
 def home() -> str:
-    return render_template('homepage.html', products=Product.query.all())
+    search_form = SearchForm(request.args, meta={'csrf': False})
+
+    if search_form.validate():
+        try:
+            query = json.loads(search_form.query.data)
+
+            keyword_names = map(lambda x: x['value'], query)
+
+            keywords = Keyword.query.filter(Keyword.name.in_(keyword_names)).all()
+            search_form.keywords = keywords
+
+            products = sum(map(lambda kw: list(kw.products), list(keywords)), [])
+        except json.JSONDecodeError:
+            products = Product.query.all()
+    else:
+        products = Product.query.all()
+
+    return render_template('homepage.html', products=products, search_form=search_form)
 
 
 @app.route('/search')
@@ -271,3 +288,11 @@ def delete_product(product_id: int) -> Response:
     db.session.commit()
 
     return redirect(url_for('home'))
+
+
+@app.route('/followed-user-products')
+@login_required
+def followed_user_products() -> str:
+    products = sum(list(map(lambda x: x.products, current_user.followees)), [])
+
+    return render_template('homepage.html', products=products)

@@ -1,3 +1,5 @@
+{% import 'macros.html' as macros %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +23,7 @@
 <section class="content position-relative">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
+            {#            <a class="navbar-brand" href="#">Navbar</a>#}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -32,11 +34,17 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-success" aria-current="page"
+                           href="{{ url_for('followed_user_products') }}">
+                            Followed user products
+                        </a>
+                    </li>
                 </ul>
-                <form class="d-flex m-auto">
-                    <input class="form-control me-2 tagssearch" type="search" placeholder="Search"
-                           aria-label="Search">
+                <form class="d-flex m-auto" method="get" action="{{ url_for('home') }}">
+                    {{ search_form.query(class='me-2 tagssearch', placeholder='Search') }}
                     <button class="btn btn-outline-success" type="submit">Search</button>
+                    <a class="btn btn-outline-secondary ms-2" href="{{ url_for('home') }}">Clear search</a>
                 </form>
                 {% if current_user.is_authenticated %}
                     <ul class="navbar-nav mr-right">
