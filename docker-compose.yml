@@ -3,7 +3,6 @@ version: "3.9"
 services:
   db:
     image: mariadb:10.5
-    container_name: project_db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
