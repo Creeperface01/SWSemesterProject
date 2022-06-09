@@ -42,7 +42,7 @@ def home() -> str:
         try:
             query = json.loads(search_form.query.data)
 
-            keyword_names = map(lambda x: x['value'], query)
+            keyword_names = map(lambda x: str(x['value']).lower(), query)
 
             keywords = Keyword.query.filter(Keyword.name.in_(keyword_names)).all()
             search_form.keywords = keywords
@@ -138,7 +138,7 @@ def follow_user(user_id: int) -> Response:
     db.session.commit()
 
 
-def process_product_form(product: Product | None = None) -> bool:
+def process_product_form(product: Product | None = None) -> Product | None:
     form = ProductForm()
 
     if form.validate_on_submit():
@@ -151,6 +151,7 @@ def process_product_form(product: Product | None = None) -> bool:
             db.session.add(product)
 
         product.name = form.name.data
+        product.price = form.price.data
         product.description = form.description.data
 
         form_images = {}
@@ -196,7 +197,7 @@ def process_product_form(product: Product | None = None) -> bool:
 
             if keyword is None:
                 keyword = Keyword()
-                keyword.name = kw['value']
+                keyword.name = kw['value'].lower()
 
             product.keywords.append(keyword)
 
@@ -207,15 +208,17 @@ def process_product_form(product: Product | None = None) -> bool:
         else:
             flash('Product has been published', 'success')
 
-        return True
+        return product
 
-    return False
+    return None
 
 
 @app.route('/product/new', methods=['GET', 'POST'])
 @login_required
-def add_product():
-    process_product_form()
+def add_product() -> str | Response:
+    product = process_product_form()
+    if product is not None:
+        return redirect(url_for('product_show', product_id=product.id))
 
     return render_template('product.html', form=ProductForm())
 
@@ -246,6 +249,7 @@ def edit_product(product_id: int) -> str | Response:
 
     default_data = {
         'name': product.name,
+        'price': product.price,
         'description': product.description,
         'keywords': json.dumps(list(map(lambda x: {'value': x.name}, product.keywords))),
         'images': list(map(lambda x: FileStorage(filename=x.path), product.images))

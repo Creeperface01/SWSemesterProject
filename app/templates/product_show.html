@@ -48,10 +48,11 @@
                 {% endif %}
             </span>
         </div>
+        <div class="col-12 fw-bold">
+            {{ product.price }} $
+        </div>
     </div>
     <div class="row mt-2 p-4">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aliquam aperiam blanditiis consectetur
-        consequatur corporis debitis distinctio excepturi ipsum laboriosam numquam officiis placeat quaerat, quisquam
-        recusandae reiciendis voluptas? Accusantium, odit!
+        {{ product.description }}
     </div>
 {% endblock %}

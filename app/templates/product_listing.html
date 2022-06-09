@@ -16,6 +16,9 @@
                         <h5 class="card-title">
                             {{ data.name }}
                         </h5>
+                        <div class="text-sm-start">
+                            {{ data.price }} $
+                        </div>
                         <a href="{{ url_for('product_show', product_id=data.id) }}" class="btn btn-success">Go to
                             detail</a>
                     </div>

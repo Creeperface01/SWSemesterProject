@@ -80,6 +80,7 @@ class Product(db.Model):
     user: User
 
     name = db.Column(db.String(256), nullable=False)
+    price = db.Column(db.Integer(), nullable=False, default=0)
     description = db.Column(db.Text())
     sold = db.Column(db.Boolean(), nullable=False, default=False)
 

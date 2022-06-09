@@ -1,12 +1,13 @@
 from flask_uploads import UploadSet, IMAGES
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, FieldList
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, FieldList, IntegerField
 from wtforms.validators import (
     DataRequired,
     Email,
     EqualTo,
     Length,
+    NumberRange
 )
 
 
@@ -90,6 +91,13 @@ class ProductForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(min=8, message='Product name must be at least 8 characters long')
+        ]
+    )
+
+    price = IntegerField(
+        'Price',
+        validators=[
+            NumberRange(min=1)
         ]
     )
 
