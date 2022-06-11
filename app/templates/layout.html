@@ -135,6 +135,25 @@
                 },
                 2000
             );
+
+            class App {
+
+                flashMessage(message, type = 'success') {
+                    const flash = $('<div class="flash alert alert-' + type + '" role="alert" style="z-index: 999999"></div>');
+                    flash.text(message);
+
+                    flash.appendTo($('#flashes'));
+
+                    setTimeout(
+                        () => {
+                            flash.fadeOut(1000);
+                        },
+                        2000
+                    );
+                }
+            }
+
+            $.app = new App();
         });
     </script>
 {% endblock %}

@@ -19,3 +19,8 @@ tags.tagssearch {
   left: -80px !important;
   padding: 10px !important;
 }
+
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}

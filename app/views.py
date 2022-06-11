@@ -122,10 +122,10 @@ def profile() -> str:
     return render_template('profile.html')
 
 
-@app.route('/follow-user/<user_id>')
+@app.route('/follow-user/<int:user_id>/<int:state>', methods=['POST'])
 @login_required
-def follow_user(user_id: int) -> Response:
-    user: User = User.get(user_id)
+def follow_user(user_id: int, state: int) -> Response:
+    user: User = User.query.get(user_id)
 
     if user is None:
         return Response('Invalid user', status=400)
@@ -133,9 +133,13 @@ def follow_user(user_id: int) -> Response:
     if user == current_user:
         return Response('Invalid user', status=400)
 
-    current_user.followees.append(user)
+    if state:
+        current_user.followees.append(user)
+    else:
+        current_user.followees.remove(user)
 
     db.session.commit()
+    return Response(status=200)
 
 
 def process_product_form(product: Product | None = None) -> Product | None:
@@ -297,6 +301,6 @@ def delete_product(product_id: int) -> Response:
 @app.route('/followed-user-products')
 @login_required
 def followed_user_products() -> str:
-    products = sum(list(map(lambda x: x.products, current_user.followees)), [])
+    products = sum(list(map(lambda x: list(x.products), list(current_user.followees))), [])
 
-    return render_template('homepage.html', products=products)
+    return render_template('homepage.html', products=products, content_title='Your followees products:')

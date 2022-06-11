@@ -18,4 +18,9 @@ tags.tagssearch {
   padding: 10px !important;
 }
 
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 /*# sourceMappingURL=style.css.map */

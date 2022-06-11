@@ -15,5 +15,14 @@
             </h4>
         </div>
     {% endif %}
+
+    {% if content_title is defined %}
+        <div class="mb-3">
+            <h4>
+                {{ content_title }}
+            </h4>
+        </div>
+    {% endif %}
+
     {{ render_products_listing(products)|safe }}
 {% endblock %}
